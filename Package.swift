@@ -5,22 +5,29 @@ import PackageDescription
 
 let package = Package(
     name: "UIKeyCommandTableView",
+    platforms: [
+        .iOS(.v11)
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "UIKeyCommandTableView",
-            targets: ["UIKeyCommandTableView"]),
+            targets: ["UIKeyCommandTableView"]
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/ipedro/UIKeyCommandOptions.git", from: "0.1.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "UIKeyCommandTableView",
-            dependencies: []),
+            dependencies: [
+                ._byNameItem(name: "UIKeyCommandOptions", condition: nil)
+            ]
+        ),
         .testTarget(
             name: "UIKeyCommandTableViewTests",
             dependencies: ["UIKeyCommandTableView"]),

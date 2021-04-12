@@ -95,11 +95,11 @@ public class UIKeyCommandTableView: UITableView {
         return keyCommands
     }
     
-    var totalNumberOfRows: Int {
+    public var totalNumberOfRows: Int {
         (0 ..< numberOfSections).map { numberOfRows(inSection: $0) }.reduce(0, +)
     }
     
-    var indexPathForLastRowInLastSection: IndexPath {
+    public var indexPathForLastRowInLastSection: IndexPath {
         let lastSection = numberOfSections - 1
         let lastRow     = numberOfRows(inSection: lastSection) - 1
         
@@ -108,7 +108,7 @@ public class UIKeyCommandTableView: UITableView {
     
     /// Tries to select and scroll to the row at the given index in section 0.
     /// Does not require the index to be in bounds. Does nothing if out of bounds.
-    func selectRowIfPossible(at indexPath: IndexPath?) {
+    public func selectRowIfPossible(at indexPath: IndexPath?) {
         guard let indexPath = indexPath else {
             return
         }

@@ -9,7 +9,7 @@
 //  https://gist.github.com/adamyanalunas/b1ce3af40843a356dc3cade6e6ab6a21
 
 import UIKit
-import UIKeyCommandOptions
+import UIKitOptions
 
 public protocol UITableViewKeyCommandsDelegate: AnyObject {
     func tableViewDidBecomeFirstResponder(_ tableView: UIKeyCommandTableView)

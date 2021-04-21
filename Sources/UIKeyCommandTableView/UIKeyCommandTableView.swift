@@ -116,10 +116,10 @@ public class UIKeyCommandTableView: UITableView {
         switch validate(indexPath) {
             
         case .success:
-            handleValidSelection(with: indexPath)
+            handleSelectionSuccess(at: indexPath)
             
         case let .failure(reason):
-            handleInvalidSelection(with: indexPath, reason: reason)
+            handleSelectionFailure(at: indexPath, reason: reason)
         }
     }
     
@@ -139,7 +139,7 @@ private extension UIKeyCommandTableView {
         }
     }
     
-    func handleValidSelection(with indexPath: IndexPath) {
+    func handleSelectionSuccess(at indexPath: IndexPath) {
         var selectedIndexPath: IndexPath? {
             guard let delegate = delegate else {
                 return indexPath
@@ -164,7 +164,7 @@ private extension UIKeyCommandTableView {
         }
     }
     
-    func handleInvalidSelection(with indexPath: IndexPath, reason: IndexPath.InvalidReason) {
+    func handleSelectionFailure(at indexPath: IndexPath, reason: IndexPath.InvalidReason) {
         switch reason {
         case .sectionBelowBounds:
             switch keyCommandsDelegate?.tableViewKeyCommandSelectionBelowBounds(self) {

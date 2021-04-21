@@ -257,7 +257,10 @@ private extension UIKeyCommandTableView {
                 return nil
             }
             
-            guard let delegate = delegate else {
+            guard
+                let delegate = delegate,
+                delegate.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
+            else {
                 return indexPathForSelectedRow
             }
             

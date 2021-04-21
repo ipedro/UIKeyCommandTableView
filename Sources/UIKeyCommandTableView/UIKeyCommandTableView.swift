@@ -71,6 +71,8 @@ public class UIKeyCommandTableView: UITableView {
     
     public var activateSelectionKeyCommandOptions: [UIKeyCommand.Options] = [.spaceBar, .return]
     
+    public var activateAccessoryButtonKeyCommandOptions: [UIKeyCommand.Options] = []
+    
     public var clearSelectionKeyCommandOptions: [UIKeyCommand.Options] = []
     
     public override var keyCommands: [UIKeyCommand]? {
@@ -86,6 +88,10 @@ public class UIKeyCommandTableView: UITableView {
         
         activateSelectionKeyCommandOptions.forEach {
             keyCommands.append(UIKeyCommand($0, action: #selector(activateSelection)))
+        }
+        
+        activateAccessoryButtonKeyCommandOptions.forEach {
+            keyCommands.append(UIKeyCommand($0, action: #selector(activateAccessorySelection)))
         }
         
         clearSelectionKeyCommandOptions.forEach {
@@ -252,24 +258,19 @@ private extension UIKeyCommandTableView {
     }
 
     func activateSelection() {
-        var selectableIndexPath: IndexPath? {
-            guard let indexPathForSelectedRow = indexPathForSelectedRow else {
-                return nil
-            }
-            
-            guard
-                let delegate = delegate,
-                delegate.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
-            else {
-                return indexPathForSelectedRow
-            }
-            
-            return delegate.tableView?(self, willSelectRowAt: indexPathForSelectedRow)
+        guard let selectedIndexPath = selectableIndexPath else {
+            return
         }
         
-        if let selectedIndexPath = selectableIndexPath {
-            delegate?.tableView?(self, didSelectRowAt: selectedIndexPath)
+        delegate?.tableView?(self, didSelectRowAt: selectedIndexPath)
+    }
+    
+    func activateAccessorySelection() {
+        guard let selectedIndexPath = selectableIndexPath else {
+            return
         }
+        
+        delegate?.tableView?(self, accessoryButtonTappedForRowWith: selectedIndexPath)
     }
     
     func selectPrevious() {
@@ -286,6 +287,21 @@ private extension UIKeyCommandTableView {
         }
         
         selectRowIfPossible(at: currentSelection.nextRow())
+    }
+    
+    var selectableIndexPath: IndexPath? {
+        guard let indexPathForSelectedRow = indexPathForSelectedRow else {
+            return nil
+        }
+        
+        guard
+            let delegate = delegate,
+            delegate.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
+        else {
+            return indexPathForSelectedRow
+        }
+        
+        return delegate.tableView?(self, willSelectRowAt: indexPathForSelectedRow)
     }
 }
 

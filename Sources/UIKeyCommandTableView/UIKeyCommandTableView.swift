@@ -133,7 +133,10 @@ public class UIKeyCommandTableView: UITableView {
     /// Tries to select and scroll to the row at the given index in section 0.
     /// Does not require the index to be in bounds. Does nothing if out of bounds.
     public func selectRowIfPossible(at indexPath: IndexPath?) {
-        guard let indexPath = indexPath else {
+        guard
+            allowsSelection,
+            let indexPath = indexPath
+        else {
             return
         }
         

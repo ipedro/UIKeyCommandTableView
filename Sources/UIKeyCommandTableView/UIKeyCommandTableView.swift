@@ -97,11 +97,11 @@ public class UIKeyCommandTableView: UITableView {
         var keyCommands = [UIKeyCommand]()
         
         selectPreviousKeyCommandOptions.forEach {
-            keyCommands.append(UIKeyCommand($0, action: #selector(selectPrevious)))
+            keyCommands.append(UIKeyCommand($0, action: #selector(selectPreviousRow)))
         }
         
         selectNextKeyCommandOptions.forEach {
-            keyCommands.append(UIKeyCommand($0, action: #selector(selectNext)))
+            keyCommands.append(UIKeyCommand($0, action: #selector(selectNextRow)))
         }
         
         activateSelectionKeyCommandOptions.forEach {
@@ -145,6 +145,34 @@ public class UIKeyCommandTableView: UITableView {
         case let .failure(reason):
             handleSelectionFailure(at: indexPath, reason: reason)
         }
+    }
+    
+    @objc
+    public func selectPreviousRow() {
+        guard let currentSelection = indexPathForSelectedRow else {
+            return selectRowIfPossible(at: {
+                if let lastVisibleRow = indexPathsForVisibleRows?.last {
+                    return lastVisibleRow
+                }
+                return indexPathForLastRowInLastSection
+            }())
+        }
+        
+        selectRowIfPossible(at: currentSelection.previousRow())
+    }
+
+    @objc
+    public func selectNextRow() {
+        guard let currentSelection = indexPathForSelectedRow else {
+            return selectRowIfPossible(at: {
+                for indexPath in indexPathsForVisibleRows ?? [] where isRowVisible(at: indexPath) == .fullyVisible {
+                    return indexPath
+                }
+                return IndexPath(row: NSNotFound, section: .zero)
+            }())
+        }
+        
+        selectRowIfPossible(at: currentSelection.nextRow())
     }
     
 }
@@ -291,30 +319,18 @@ private extension UIKeyCommandTableView {
         delegate?.tableView?(self, accessoryButtonTappedForRowWith: selectedIndexPath)
     }
     
-    func selectPrevious() {
-        guard let currentSelection = indexPathForSelectedRow else {
-            return selectRowIfPossible(at: {
-                if let lastVisibleRow = indexPathsForVisibleRows?.last {
-                    return lastVisibleRow
-                }
-                return indexPathForLastRowInLastSection
-            }())
+    var indexPathForFirstVisibleRow: IndexPath? {
+        for indexPath in indexPathsForVisibleRows ?? [] where isRowVisible(at: indexPath) == .fullyVisible {
+            return indexPath
         }
-        
-        selectRowIfPossible(at: currentSelection.previousRow())
+        return .none
     }
-
-    func selectNext() {
-        guard let currentSelection = indexPathForSelectedRow else {
-            return selectRowIfPossible(at: {
-                if let firstVisibleRow = indexPathsForVisibleRows?.first {
-                    return firstVisibleRow
-                }
-                return IndexPath(row: NSNotFound, section: .zero)
-            }())
+    
+    var indexPathForLastVisibleRow: IndexPath? {
+        for indexPath in (indexPathsForVisibleRows ?? []).reversed() where isRowVisible(at: indexPath) == .fullyVisible {
+            return indexPath
         }
-        
-        selectRowIfPossible(at: currentSelection.nextRow())
+        return .none
     }
     
     var selectableIndexPath: IndexPath? {
@@ -338,7 +354,7 @@ private extension UIKeyCommandTableView {
 private extension UIKeyCommandTableView {
     
     /// Whether a row is fully visible, or if not if it’s above or below the viewport.
-    enum RowVisibility {
+    enum RowVisibility: Hashable {
         case fullyVisible
         case notFullyVisible(ScrollPosition)
     }

@@ -293,7 +293,12 @@ private extension UIKeyCommandTableView {
     
     func selectPrevious() {
         guard let currentSelection = indexPathForSelectedRow else {
-            return selectRowIfPossible(at: indexPathForLastRowInLastSection)
+            return selectRowIfPossible(at: {
+                if let lastVisibleRow = indexPathsForVisibleRows?.last {
+                    return lastVisibleRow
+                }
+                return indexPathForLastRowInLastSection
+            }())
         }
         
         selectRowIfPossible(at: currentSelection.previousRow())
@@ -301,7 +306,12 @@ private extension UIKeyCommandTableView {
 
     func selectNext() {
         guard let currentSelection = indexPathForSelectedRow else {
-            return selectRowIfPossible(at: .first)
+            return selectRowIfPossible(at: {
+                if let firstVisibleRow = indexPathsForVisibleRows?.first {
+                    return firstVisibleRow
+                }
+                return IndexPath(row: NSNotFound, section: .zero)
+            }())
         }
         
         selectRowIfPossible(at: currentSelection.nextRow())

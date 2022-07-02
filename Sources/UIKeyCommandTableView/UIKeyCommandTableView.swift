@@ -149,30 +149,12 @@ public class UIKeyCommandTableView: UITableView {
     
     @objc
     public func selectPreviousRow() {
-        guard let currentSelection = indexPathForSelectedRow else {
-            return selectRowIfPossible(at: {
-                if let lastVisibleRow = indexPathsForVisibleRows?.last {
-                    return lastVisibleRow
-                }
-                return indexPathForLastRowInLastSection
-            }())
-        }
-        
-        selectRowIfPossible(at: currentSelection.previousRow())
+        selectRowIfPossible(at: indexPathForSelectedRow?.previousRow() ?? indexPathForLastVisibleRow)
     }
 
     @objc
     public func selectNextRow() {
-        guard let currentSelection = indexPathForSelectedRow else {
-            return selectRowIfPossible(at: {
-                for indexPath in indexPathsForVisibleRows ?? [] where isRowVisible(at: indexPath) == .fullyVisible {
-                    return indexPath
-                }
-                return IndexPath(row: NSNotFound, section: .zero)
-            }())
-        }
-        
-        selectRowIfPossible(at: currentSelection.nextRow())
+        selectRowIfPossible(at: indexPathForSelectedRow?.nextRow() ?? indexPathForFirstVisibleRow)
     }
     
 }

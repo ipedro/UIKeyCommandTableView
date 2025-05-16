@@ -25,7 +25,6 @@
 import Foundation
 
 extension IndexPath {
-    
     enum InvalidReason: Error {
         case sectionBelowBounds, sectionAboveBounds, rowBelowBounds, rowAboveBounds
     }
